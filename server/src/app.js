@@ -17,24 +17,20 @@ const app = new express();
 
 const allowedOrigins = [
   "https://streamify-psi-gray.vercel.app",
-  "http://localhost:5173", // optional, if you want local dev too
+  "http://localhost:5173"
 ];
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      // allow requests with no origin (like mobile apps or curl)
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-  })
-);
+// Always first
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true,
+}));
 
-
+// Then add CORS preflight support
+app.options("*", cors({
+  origin: allowedOrigins,
+  credentials: true,
+}));
 
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
